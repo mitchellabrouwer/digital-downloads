@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Link from "next/link";
+import Heading from "../components/Heading";
 
 export default function Home() {
   return (
@@ -9,16 +9,10 @@ export default function Home() {
         <meta name="description" content="" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Link href="/api/auth/signin" className="flex justify-center">
-        <a
-          className="rounded-full border border-black bg-black px-4 py-1 text-white"
-          href="/api/auth/signin"
-        >
-          login
-        </a>
-      </Link>
 
       <h1>Welcome!</h1>
+      <Heading />
+      <h1 className="mt-20 flex justify-center text-xl">Welcome!</h1>
     </div>
   );
 }

@@ -11,16 +11,18 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
-  email         String?   @unique
-  username      String?   @unique
+  email         String?    @unique
+  username      String?    @unique
   emailVerified DateTime?
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   accounts      Account[]
   sessions      Session[]
+  products      Product[]
+  purchases     Purchase[]
 }
 
 model VerificationToken {
@@ -58,4 +60,32 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  image       String?
+  url         String?
+  price       Decimal?
+  free        Boolean  @default(false)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  purchases Purchase[]
+}
+
+model Purchase {
+  id        String   @id @default(cuid())
+  amount    Decimal
+  createdAt DateTime @default(now())
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  sessionId String?
+  paid      Boolean  @default(false)
 }
