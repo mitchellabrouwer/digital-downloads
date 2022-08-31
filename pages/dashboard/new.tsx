@@ -139,7 +139,7 @@ export default function NewProduct() {
             </label>
           </div>
           <button
-            type="button"
+            type="submit"
             disabled={!(title && product && (free || price))}
             className={`mt-10 border px-8 py-2 font-bold  ${
               title && (free || price)

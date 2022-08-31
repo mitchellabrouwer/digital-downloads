@@ -55,7 +55,7 @@ export default function Dashboard() {
       </div>
 
       <button
-        type="button"
+        type="submit"
         className="mt-0 border px-8 py-2 font-bold hover:bg-white hover:text-black"
       >
         Save
