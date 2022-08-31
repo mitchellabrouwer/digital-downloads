@@ -25,6 +25,8 @@ export default function Heading() {
         )}
       </div>
 
+      <div className="ml-10 mt-1 grow"></div>
+
       {session &&
         (router.asPath === "/dashboard" ? (
           <a className="flex">

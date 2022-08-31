@@ -14,3 +14,12 @@ export const getProducts = async (options, prisma: PrismaClient) => {
 
   return products;
 };
+
+export const getProduct = async (id, prisma) => {
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: { author: true },
+  });
+
+  return product;
+};
