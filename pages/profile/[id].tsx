@@ -1,49 +1,26 @@
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
-import { getSession, useSession } from "next-auth/react";
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react/no-array-index-key */
 import Head from "next/head";
-
 import Link from "next/link";
-import { useRouter } from "next/router";
 import Heading from "../../components/Heading";
-import { getProducts } from "../../lib/data";
+import { getProducts, getUser } from "../../lib/data";
 import prisma from "../../lib/prisma";
 
-export default function Dashboard({ products }) {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const loading = status === "loading";
-
-  if (loading) {
-    return null;
-  }
-
-  if (!session) {
-    router.push("/");
-  }
-
-  if (session && !session.user.name) {
-    router.push("/setup");
-  }
-
+export default function Profile({ user, products }) {
   return (
     <div>
       <Head>
         <title>Digital Downloads</title>
-        <meta name="description" content="Digital Downloads website"></meta>
-        <link rel="icon" href="/favicon.ico"></link>
+        <meta name="description" content="Digital Downloads Website" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <Heading />
 
-      <h1 className="mt-20 flex justify-center text-xl">Dashboard</h1>
-
-      <div className="mt-10 flex justify-center">
-        <Link href="/dashboard/new">
-          <a className="border p-2 text-xl">Create a new product</a>
-        </Link>
-      </div>
+      <h1 className="mt-20 flex justify-center text-xl">
+        Products made by {user.name}
+      </h1>
 
       <div className="mt-10 flex justify-center">
         <div className="flex w-full flex-col ">
@@ -66,12 +43,7 @@ export default function Dashboard({ products }) {
                     <p>${product.price / 100}</p>
                   )}
                 </div>
-                <div>
-                  <Link href={`/dashboard/product/${product.id}`}>
-                    <a className="border p-2 text-sm font-bold uppercase">
-                      Edit
-                    </a>
-                  </Link>
+                <div className="">
                   <Link href={`/product/${product.id}`}>
                     <a className="ml-2 border p-2 text-sm font-bold uppercase">
                       View
@@ -85,17 +57,17 @@ export default function Dashboard({ products }) {
     </div>
   );
 }
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
 
-  if (!session) {
-    return { props: {} };
-  }
-  let products = await getProducts({ author: session.user.id }, prisma);
+export async function getServerSideProps(context) {
+  let user = await getUser(context.params.id, prisma);
+  user = JSON.parse(JSON.stringify(user));
+
+  let products = await getProducts({ author: context.params.id }, prisma);
   products = JSON.parse(JSON.stringify(products));
 
   return {
     props: {
+      user,
       products,
     },
   };

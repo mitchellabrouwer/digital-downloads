@@ -23,3 +23,11 @@ export const getProduct = async (id, prisma) => {
 
   return product;
 };
+
+export const getUser = async (id, prisma) => {
+  const user = await prisma.user.findUnique({
+    where: { id },
+  });
+
+  return user;
+};
