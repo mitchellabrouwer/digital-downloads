@@ -10,6 +10,10 @@ export const getProducts = async (options, prisma: PrismaClient) => {
     data.where.author = { id: options.author };
   }
 
+  if (options.take) {
+    data.take = options.take;
+  }
+
   const products = await prisma.product.findMany(data);
 
   return products;
