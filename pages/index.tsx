@@ -24,7 +24,7 @@ export default function Home({ products }) {
       <div className="mt-10 flex justify-center">
         <div className="flex w-full flex-col ">
           {products &&
-            products.map((product, index) => (
+            products.map((product) => (
               <div
                 className="mx-auto my-2 flex w-full justify-between border px-4 py-5 md:w-2/3 xl:w-1/3 "
                 key={product.id}
@@ -57,7 +57,7 @@ export default function Home({ products }) {
   );
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps() {
   let products = await getProducts({ take: 3 }, prisma);
   products = JSON.parse(JSON.stringify(products));
 

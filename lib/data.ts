@@ -35,3 +35,19 @@ export const getUser = async (id, prisma) => {
 
   return user;
 };
+
+export const getPurchases = async (options, prisma) => {
+  const data: Prisma.PurchaseFindManyArgs = {
+    where: { paid: true },
+    orderBy: [{ createdAt: "desc" }],
+    include: { product: true },
+  };
+
+  if (options.author) {
+    data.where.author = { id: options.author };
+  }
+
+  const purchases = await prisma.purchase.findMany(data);
+
+  return purchases;
+};

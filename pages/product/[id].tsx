@@ -1,12 +1,23 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import Heading from "../../components/Heading";
 import { getProduct } from "../../lib/data";
 import prisma from "../../lib/prisma";
 
 export default function Product({ product }) {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  const loading = status === "loading";
+
+  if (loading) {
+    return null;
+  }
+
   if (!product) {
     return null;
   }
@@ -38,12 +49,31 @@ export default function Product({ product }) {
               )}
             </div>
             <div className="">
-              <button
-                type="button"
-                className="border p-2 text-sm font-bold uppercase"
-              >
-                PURCHASE
-              </button>
+              {!session && <p>Login first</p>}
+              {session && (
+                <div>
+                  {session.user.id !== product.author.id ? (
+                    <button
+                      type="button"
+                      className="border p-2 text-sm font-bold uppercase"
+                      onClick={async () => {
+                        if (product.free) {
+                          await fetch("/api/download", {
+                            body: JSON.stringify({ productId: product.id }),
+                            headers: { "Content-Type": "application/json" },
+                            method: "POST",
+                          });
+                        }
+                        router.push("/dashboard");
+                      }}
+                    >
+                      {product.free ? "DOWNLOAD" : "PURCHASE"}
+                    </button>
+                  ) : (
+                    "Your product"
+                  )}
+                </div>
+              )}
             </div>
           </div>
           <div className="mb-10">{product.description}</div>
