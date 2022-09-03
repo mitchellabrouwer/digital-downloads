@@ -73,6 +73,7 @@ model Product {
   free        Boolean  @default(false)
   published   Boolean  @default(false)
   createdAt   DateTime @default(now())
+  sold        Int      @default(0)
 
   author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String

@@ -28,6 +28,7 @@ export default async (req, res) => {
           currency: "usd",
           product_data: {
             name: `Purchase product ${req.body.title}`,
+            // save product id here
           },
           unit_amount: req.body.amount,
         },
@@ -40,7 +41,7 @@ export default async (req, res) => {
     cancel_url: `${process.env.BASE_URL}/dashboard`,
   });
 
-  const test = await prisma.purchase.create({
+  await prisma.purchase.create({
     data: {
       amount: req.body.amount,
       sessionId: stripeSession.id,
@@ -48,8 +49,6 @@ export default async (req, res) => {
       product: { connect: { id: req.body.productId } },
     },
   });
-
-  console.log("test", test);
 
   res.writeHead(200, { "Content-Type": "application/json" });
 
