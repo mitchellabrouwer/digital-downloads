@@ -1,11 +1,24 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export default function Heading() {
   const router = useRouter();
 
+  const [sales, setSales] = useState([]);
   const { data: session, status } = useSession();
+
+  useEffect(() => {
+    const salesData = async () => {
+      const res = await fetch("/api/sales");
+      const data = await res.json();
+
+      console.log("data", data);
+      setSales(data);
+    };
+    salesData();
+  }, []);
 
   const loading = status === "loading";
 
@@ -30,11 +43,13 @@ export default function Heading() {
       {session &&
         (router.asPath === "/dashboard" ? (
           <>
-            <div className="mr-3">
-              <Link href="/dashboard/sales">
-                <a className="underline">See sales</a>
-              </Link>
-            </div>
+            {sales.length > 0 && (
+              <div className="mr-3">
+                <Link href="/dashboard/sales">
+                  <a className="underline">See sales</a>
+                </Link>
+              </div>
+            )}
             <div className="mr-3">
               <Link href="/dashboard/new">
                 <a className="underline">Create a new product</a>
