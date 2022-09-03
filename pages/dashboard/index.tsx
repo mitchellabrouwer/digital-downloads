@@ -67,18 +67,25 @@ export default function Dashboard({ products, purchases }) {
                     <p>${product.price / 100}</p>
                   )}
                 </div>
-                <div className="">
-                  <Link href={`/dashboard/product/${product.id}`}>
-                    <a className="border p-2 text-sm font-bold uppercase">
-                      Edit
-                    </a>
-                  </Link>
-                  <Link href={`/product/${product.id}`}>
-                    <a className="ml-2 border p-2 text-sm font-bold uppercase">
-                      View
-                    </a>
-                  </Link>
+                <div>
+                  <div>
+                    <Link href={`/dashboard/product/${product.id}`}>
+                      <a className="border p-2 text-sm font-bold uppercase">
+                        Edit
+                      </a>
+                    </Link>
+                    <Link href={`/product/${product.id}`}>
+                      <a className="ml-2 border p-2 text-sm font-bold uppercase">
+                        View
+                      </a>
+                    </Link>
+                  </div>
                 </div>
+                {product.purchases && product.purchases.length > 0 && (
+                  <p className="mt-3 text-right">
+                    {product.purchases.length} sales
+                  </p>
+                )}
               </div>
             ))}
           </div>
@@ -129,7 +136,10 @@ export async function getServerSideProps(context) {
   const session = await getSession(context);
   if (!session) return { props: {} };
 
-  let products = await getProducts({ author: session.user.id }, prisma);
+  let products = await getProducts(
+    { author: session.user.id, includePurchases: true },
+    prisma
+  );
   products = JSON.parse(JSON.stringify(products));
 
   let purchases = await getPurchases({ author: session.user.id }, prisma);

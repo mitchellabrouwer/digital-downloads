@@ -14,6 +14,10 @@ export const getProducts = async (options, prisma: PrismaClient) => {
     data.take = options.take;
   }
 
+  if (options.includePurchases) {
+    data.include = { purchases: true };
+  }
+
   const products = await prisma.product.findMany(data);
 
   return products;
@@ -66,4 +70,23 @@ export const alreadyPurchased = async (options, prisma) => {
   });
 
   return purchases.length > 0;
+};
+
+export const getSales = async (options, prisma) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: options.author,
+    },
+    include: { products: true },
+  });
+
+  const purchases = await prisma.purchase.findMany({
+    where: {
+      paid: true,
+      productId: { in: user.products.map((product) => product.id) },
+    },
+    include: { product: true, author: true },
+  });
+
+  return purchases;
 };
