@@ -51,3 +51,19 @@ export const getPurchases = async (options, prisma) => {
 
   return purchases;
 };
+
+export const alreadyPurchased = async (options, prisma) => {
+  const purchases = await prisma.purchase.findMany({
+    where: {
+      product: { id: options.product },
+      author: { id: options.author },
+      paid: true,
+    },
+    include: {
+      author: true,
+      product: true,
+    },
+  });
+
+  return purchases.length > 0;
+};

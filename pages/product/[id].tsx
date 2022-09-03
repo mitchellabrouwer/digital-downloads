@@ -1,15 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Script from "next/script";
 import Heading from "../../components/Heading";
-import { getProduct } from "../../lib/data";
+import { alreadyPurchased, getProduct } from "../../lib/data";
 import prisma from "../../lib/prisma";
 
-export default function Product({ product }) {
+export default function Product({ product, purchased }) {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -54,52 +54,58 @@ export default function Product({ product }) {
               {!session && <p>Login first</p>}
               {session && (
                 <div>
-                  {session.user.id !== product.author.id ? (
-                    <button
-                      type="button"
-                      className="border p-2 text-sm font-bold uppercase"
-                      onClick={async () => {
-                        if (product.free) {
-                          await fetch("/api/download", {
-                            body: JSON.stringify({ productId: product.id }),
-                            headers: { "Content-Type": "application/json" },
-                            method: "POST",
-                          });
-                        } else {
-                          const res = await fetch("/api/stripe/session", {
-                            body: JSON.stringify({
-                              amount: product.price,
-                              title: product.title,
-                              productId: product.id,
-                            }),
-                            headers: {
-                              "Content-Type": "application/json",
-                            },
-                            method: "POST",
-                          });
-
-                          const data = await res.json();
-
-                          if (data.status === "error") {
-                            return alert(data.message);
-                          }
-                          const { sessionId } = data;
-                          const { stripePublicKey } = data;
-
-                          // @ts-ignore
-                          // eslint-disable-next-line no-undef
-                          const stripe = Stripe(stripePublicKey);
-                          await stripe.redirectToCheckout({
-                            sessionId,
-                          });
-                        }
-                        return router.push("/dashboard");
-                      }}
-                    >
-                      {product.free ? "DOWNLOAD" : "PURCHASE"}
-                    </button>
+                  {purchased ? (
+                    "Already purchased"
                   ) : (
-                    "Your product"
+                    <div>
+                      {session.user.id !== product.author.id ? (
+                        <button
+                          type="button"
+                          className="border p-2 text-sm font-bold uppercase"
+                          onClick={async () => {
+                            if (product.free) {
+                              await fetch("/api/download", {
+                                body: JSON.stringify({ productId: product.id }),
+                                headers: { "Content-Type": "application/json" },
+                                method: "POST",
+                              });
+                            } else {
+                              const res = await fetch("/api/stripe/session", {
+                                body: JSON.stringify({
+                                  amount: product.price,
+                                  title: product.title,
+                                  productId: product.id,
+                                }),
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                method: "POST",
+                              });
+
+                              const data = await res.json();
+
+                              if (data.status === "error") {
+                                return alert(data.message);
+                              }
+                              const { sessionId } = data;
+                              const { stripePublicKey } = data;
+
+                              // @ts-ignore
+                              // eslint-disable-next-line no-undef
+                              const stripe = Stripe(stripePublicKey);
+                              await stripe.redirectToCheckout({
+                                sessionId,
+                              });
+                            }
+                            return router.push("/dashboard");
+                          }}
+                        >
+                          {product.free ? "DOWNLOAD" : "PURCHASE"}
+                        </button>
+                      ) : (
+                        "Your product"
+                      )}
+                    </div>
                   )}
                 </div>
               )}
@@ -119,12 +125,27 @@ export default function Product({ product }) {
 }
 
 export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
   let product = await getProduct(context.params.id, prisma);
+
+  let purchased = null;
+  if (session) {
+    purchased = await alreadyPurchased(
+      {
+        product: context.params.id,
+        author: session.user.id,
+      },
+      prisma
+    );
+  }
+
   product = JSON.parse(JSON.stringify(product));
 
   return {
     props: {
       product,
+      purchased,
     },
   };
 }
