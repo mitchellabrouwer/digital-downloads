@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Script from "next/script";
 import Heading from "../../components/Heading";
 import { getProduct } from "../../lib/data";
 import prisma from "../../lib/prisma";
@@ -29,6 +30,7 @@ export default function Product({ product }) {
         <meta name="description" content="Digital Downloads Website" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Script src="https://js.stripe.com/v3/" async></Script>
 
       <Heading />
 
@@ -63,8 +65,35 @@ export default function Product({ product }) {
                             headers: { "Content-Type": "application/json" },
                             method: "POST",
                           });
+                        } else {
+                          const res = await fetch("/api/stripe/session", {
+                            body: JSON.stringify({
+                              amount: product.price,
+                              title: product.title,
+                              productId: product.id,
+                            }),
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            method: "POST",
+                          });
+
+                          const data = await res.json();
+
+                          if (data.status === "error") {
+                            return alert(data.message);
+                          }
+                          const { sessionId } = data;
+                          const { stripePublicKey } = data;
+
+                          // @ts-ignore
+                          // eslint-disable-next-line no-undef
+                          const stripe = Stripe(stripePublicKey);
+                          await stripe.redirectToCheckout({
+                            sessionId,
+                          });
                         }
-                        router.push("/dashboard");
+                        return router.push("/dashboard");
                       }}
                     >
                       {product.free ? "DOWNLOAD" : "PURCHASE"}

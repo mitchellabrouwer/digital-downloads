@@ -39,6 +39,12 @@ export default function Dashboard({ products, purchases }) {
       <h1 className="mt-20 flex justify-center text-xl">Dashboard</h1>
 
       <div className="mt-10 flex justify-center">
+        <Link href="/dashboard/new">
+          <a className="border p-2 text-xl">Create a new product</a>
+        </Link>
+      </div>
+
+      <div className="mt-10 flex justify-center">
         {products.length > 0 && (
           <div className="flex w-full flex-col ">
             <h2 className="mb-4 text-center text-xl">Products</h2>
