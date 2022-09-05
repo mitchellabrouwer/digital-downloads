@@ -70,6 +70,8 @@ export default function Product({ product, purchased }) {
                                 method: "POST",
                               });
                             } else {
+                              console.log(product.id);
+
                               const res = await fetch("/api/stripe/session", {
                                 body: JSON.stringify({
                                   amount: product.price,

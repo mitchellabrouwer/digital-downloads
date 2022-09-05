@@ -42,12 +42,17 @@ export default function Home({ products }) {
                     <p>${product.price / 100}</p>
                   )}
                 </div>
-                <div className="">
-                  <Link href={`/product/${product.id}`}>
-                    <a className="ml-2 border p-2 text-sm font-bold uppercase">
-                      View
-                    </a>
-                  </Link>
+                <div className="text-right">
+                  <div className="">
+                    <Link href={`/product/${product.id}`}>
+                      <a className="ml-2 border p-2 text-sm font-bold uppercase">
+                        View
+                      </a>
+                    </Link>
+                  </div>
+                  <div className="mt-2 text-xs italic">
+                    {product.sold > 0 ? `${product.sold} already sold` : ""}
+                  </div>
                 </div>
               </div>
             ))}

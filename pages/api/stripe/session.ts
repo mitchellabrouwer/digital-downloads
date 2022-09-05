@@ -19,7 +19,6 @@ export default async (req, res) => {
     return res.status(401).json({ message: "User not found" });
   }
 
-  console.log("amount", req.body.amount);
   const stripeSession = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: [
@@ -28,7 +27,6 @@ export default async (req, res) => {
           currency: "usd",
           product_data: {
             name: `Purchase product ${req.body.title}`,
-            // save product id here
           },
           unit_amount: req.body.amount,
         },

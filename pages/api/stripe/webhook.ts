@@ -43,17 +43,19 @@ export default async (req, res) => {
   if (event.type === "checkout.session.completed") {
     const sessionId = event.data.object.id;
 
-    // eslint-disable-next-line camelcase
-    const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ["line_items"],
-    });
-    const purchased = session.line_items.data.reduce(
-      (accumulator, product) => [...accumulator, product.id],
-      []
-    );
-    console.log(purchased);
-
     try {
+      const sessionProducts = await prisma.purchase.findMany({
+        select: {
+          productId: true,
+        },
+        where: {
+          sessionId,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
       await prisma.purchase.updateMany({
         data: {
           paid: true,
@@ -64,7 +66,6 @@ export default async (req, res) => {
         },
       });
 
-      // get list of products sold
       await prisma.product.updateMany({
         data: {
           sold: {
@@ -72,9 +73,7 @@ export default async (req, res) => {
           },
         },
         where: {
-          id: {
-            in: sessionId,
-          },
+          id: sessionProducts[0].productId,
         },
       });
 
