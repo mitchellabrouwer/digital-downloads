@@ -29,10 +29,7 @@ export const DisplayStars: React.FC<DisplayStarsProps> = ({
   return (
     <div>
       {rating ? (
-        <div className="flex">
-          {stars}
-          <em className="text-xs">{`(${totalVotes})`}</em>
-        </div>
+        <div className="flex">{stars}</div>
       ) : (
         <div className="flex">
           <BsStar size="12" color="lightGray" />;
@@ -46,3 +43,4 @@ export const DisplayStars: React.FC<DisplayStarsProps> = ({
     </div>
   );
 };
+// <em className="text-xs">{`(${totalVotes})`}</em>

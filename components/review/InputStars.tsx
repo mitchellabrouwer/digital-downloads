@@ -47,8 +47,8 @@ export const InputStars: React.FC<InputStarsProps> = ({
 
   return (
     <>
-      <b className="font-bold">Star rating</b>
-      <div className="flex">
+      <b className="block font-bold">Star rating</b>
+      <div className="flex justify-center">
         {stars.map((_, index) => (
           <button
             type="button"

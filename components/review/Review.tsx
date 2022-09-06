@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Form, Formik, FormikHelpers } from "formik";
+import { Field, Form, Formik, FormikHelpers } from "formik";
 import React, { useEffect, useState } from "react";
 import * as yup from "yup";
 import { Spinner } from "../ui/Spinner";
@@ -12,20 +12,14 @@ interface ReviewFormProps {
 }
 
 interface Variables {
-  id: string;
-  rating: number;
   comment: string;
 }
 
 const initialValues = {
-  id: "",
-  rating: 0,
   comment: "",
 };
 
 const validationSchema = yup.object({
-  id: yup.string().uuid(),
-  rating: yup.number(),
   comment: yup.string(),
 });
 
@@ -62,16 +56,19 @@ export const Review: React.FC<ReviewFormProps> = ({ productId }) => {
     };
     getReview();
   }, [productId]);
+  console.log(productId);
 
   const onHandleSubmit = async (
     values: Variables,
     { setSubmitting }: FormikHelpers<Variables>
   ) => {
+    console.log(values);
+
     try {
       const res = await fetch("/api/review", {
         body: JSON.stringify({
           product: productId,
-          rating: values.rating,
+          rating,
           comment: values.comment,
         }),
         headers: {
@@ -106,22 +103,29 @@ export const Review: React.FC<ReviewFormProps> = ({ productId }) => {
         {({ isSubmitting }) => (
           <Form>
             {!isLoading ? (
-              <>
-                <InputStars
-                  initialStars={previousRating}
-                  setRating={setRating}
-                />
-                <input
-                  name="comment"
-                  placeholder={comment || "How did it turn out?"}
-                  // label="Comment"
-                  type="textarea"
-                  // textarea
-                />
-                <button className="mt-4" type="submit">
+              <div className="text-center">
+                <div className="text-center">
+                  <Field
+                    as="textarea"
+                    name="comment"
+                    placeholder={comment || "What did you think?"}
+                    type="textarea"
+                    className="my-2 w-full rounded-lg border p-1"
+                    value={comment}
+                    rows="4"
+                  />
+                  <InputStars
+                    initialStars={previousRating}
+                    setRating={setRating}
+                  />
+                </div>
+                <button
+                  className="mt-5 mr-1 mb-1 rounded bg-emerald-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-emerald-600"
+                  type="submit"
+                >
                   {isSubmitting ? "Loading" : "Review"}
                 </button>
-              </>
+              </div>
             ) : (
               <Spinner />
             )}
