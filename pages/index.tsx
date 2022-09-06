@@ -63,7 +63,7 @@ export default function Home({ products }) {
 }
 
 export async function getServerSideProps() {
-  let products = await getProducts({ take: 3 }, prisma);
+  let products = await getProducts({ take: 3, sort: true }, prisma);
   products = JSON.parse(JSON.stringify(products));
 
   return {

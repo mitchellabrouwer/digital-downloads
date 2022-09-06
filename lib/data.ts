@@ -14,6 +14,12 @@ export const getProducts = async (options, prisma: PrismaClient) => {
     data.take = options.take;
   }
 
+  if (options.sort) {
+    data.orderBy = {
+      sold: "desc",
+    };
+  }
+
   if (options.includePurchases) {
     data.include = { purchases: true };
   }
@@ -89,4 +95,30 @@ export const getSales = async (options, prisma) => {
   });
 
   return purchases;
+};
+
+export const getReview = async (productId, userId, prisma) => {
+  const review = await prisma.review.findUnique({
+    where: {
+      userId_productId: {
+        userId,
+        productId,
+      },
+    },
+  });
+
+  return review;
+};
+
+export const getReviewsAverage = async (productId, prisma) => {
+  const rating = await prisma.review.aggregate({
+    _avg: {
+      rating: true,
+    },
+    where: {
+      productId,
+    },
+  });
+
+  return rating;
 };

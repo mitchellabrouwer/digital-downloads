@@ -5,6 +5,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Heading from "../../components/Heading";
+import Modal from "../../components/Modal";
+import { Review } from "../../components/review/Review";
 import { getProducts, getPurchases } from "../../lib/data";
 import prisma from "../../lib/prisma";
 
@@ -33,17 +35,13 @@ export default function Dashboard({ products, purchases }) {
         <meta name="description" content="Digital Downloads Website" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <Heading />
-
       <h1 className="mt-20 flex justify-center text-xl">Dashboard</h1>
-
       <div className="mt-10 flex justify-center">
         <Link href="/dashboard/new">
           <a className="border p-2 text-xl">Create a new product</a>
         </Link>
       </div>
-
       <div className="mt-10 flex justify-center">
         {products.length > 0 && (
           <div className="flex w-full flex-col ">
@@ -67,6 +65,7 @@ export default function Dashboard({ products, purchases }) {
                     <p>${product.price / 100}</p>
                   )}
                 </div>
+
                 <div>
                   <div>
                     <Link href={`/dashboard/product/${product.id}`}>
@@ -81,6 +80,7 @@ export default function Dashboard({ products, purchases }) {
                     </Link>
                   </div>
                 </div>
+
                 {product.purchases && product.purchases.length > 0 && (
                   <p className="mt-3 text-right">
                     {product.purchases.length} sales
@@ -115,13 +115,18 @@ export default function Dashboard({ products, purchases }) {
                     <p>${purchase.amount / 100}</p>
                   )}
                 </div>
-                <div className="">
-                  <a
-                    href={purchase.product.url}
-                    className="border p-2 text-sm font-bold uppercase"
-                  >
-                    Get files
-                  </a>
+                <div className="flex flex-col">
+                  <div className="">
+                    <a
+                      href={purchase.product.url}
+                      className="border p-2 text-sm font-bold uppercase"
+                    >
+                      Get files
+                    </a>
+                  </div>
+                  <Modal title="Review product x" buttonText="Review">
+                    <Review productId={purchase.productId} />
+                  </Modal>
                 </div>
               </div>
             ))}
