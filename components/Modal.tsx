@@ -5,7 +5,7 @@ export default function Modal({ buttonText, title, children }) {
   return (
     <>
       <button
-        className="mr-1 mb-1 rounded bg-pink-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-pink-600"
+        className="border p-2 text-sm font-bold uppercase"
         type="button"
         onClick={() => setShowModal(true)}
       >

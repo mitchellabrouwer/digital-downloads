@@ -85,6 +85,8 @@ export const Review: React.FC<ReviewFormProps> = ({ productId }) => {
         );
       }
 
+      console.log("data", data);
+
       setSubmitting(false);
     } catch (error) {
       console.log(error);
@@ -111,7 +113,7 @@ export const Review: React.FC<ReviewFormProps> = ({ productId }) => {
                     placeholder={comment || "What did you think?"}
                     type="textarea"
                     className="my-2 w-full rounded-lg border p-1"
-                    value={comment}
+                    // value={comment}
                     rows="4"
                   />
                   <InputStars
@@ -122,23 +124,14 @@ export const Review: React.FC<ReviewFormProps> = ({ productId }) => {
                 <button
                   className="mt-5 mr-1 mb-1 rounded bg-emerald-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-emerald-600"
                   type="submit"
+                  disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Loading" : "Review"}
+                  {previousRating ? "Update" : "Review"}
                 </button>
               </div>
             ) : (
               <Spinner />
             )}
-            {/* 
-            {reviewUpdated && (
-              <CustomAlert
-                status="success"
-                text="🙏 thanks for your feedback"
-              />
-            )}
-            {isError && (
-              <CustomAlert status="error" text="Something went wrong :" />
-            )} */}
           </Form>
         )}
       </Formik>

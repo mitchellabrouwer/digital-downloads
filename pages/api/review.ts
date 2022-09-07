@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     console.log(req.query.product);
 
-    const review = await getReview(session.user.id, req.query.product, prisma);
+    const review = await getReview(req.query.product, session.user.id, prisma);
 
     console.log("review", review);
     return res.json(review);

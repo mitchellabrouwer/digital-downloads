@@ -115,16 +115,15 @@ export default function Dashboard({ products, purchases }) {
                     <p>${purchase.amount / 100}</p>
                   )}
                 </div>
-                <div className="flex flex-col">
-                  <div className="">
-                    <a
-                      href={purchase.product.url}
-                      className="border p-2 text-sm font-bold uppercase"
-                    >
-                      Get files
-                    </a>
-                  </div>
-                  <Modal title="Review product x" buttonText="Review">
+                <div className="flex">
+                  <a
+                    href={purchase.product.url}
+                    className="flex items-center border p-2 text-sm font-bold uppercase"
+                  >
+                    Get files
+                  </a>
+
+                  <Modal title="Review you purchase" buttonText="Review">
                     <Review productId={purchase.productId} />
                   </Modal>
                 </div>
